@@ -178,8 +178,7 @@ set_hook(const char *funcname, PyObject **hook_var, PyObject *args)
 	if (!PyArg_ParseTuple(args, buf, &function))
 		return NULL;
 	if (function == Py_None) {
-		Py_XDECREF(*hook_var);
-		*hook_var = NULL;
+		Py_CLEAR(*hook_var);
 	}
 	else if (PyCallable_Check(function)) {
 		PyObject *tmp = *hook_var;
@@ -655,14 +654,22 @@ on_hook(PyObject *func)
 }
 
 static int
+#if defined(_RL_FUNCTION_TYPEDEF)
 on_startup_hook(void)
+#else
+on_startup_hook()
+#endif
 {
 	return on_hook(startup_hook);
 }
 
 #ifdef HAVE_RL_PRE_INPUT_HOOK
 static int
+#if defined(_RL_FUNCTION_TYPEDEF)
 on_pre_input_hook(void)
+#else
+on_pre_input_hook()
+#endif
 {
 	return on_hook(pre_input_hook);
 }
@@ -757,7 +764,7 @@ on_completion(const char *text, int state)
  * before calling the normal completer */
 
 static char **
-flex_complete(char *text, int start, int end)
+flex_complete(const char *text, int start, int end)
 {
 	Py_XDECREF(begidx);
 	Py_XDECREF(endidx);
@@ -791,12 +798,12 @@ setup_readline(void)
 	rl_bind_key_in_map ('\t', rl_complete, emacs_meta_keymap);
 	rl_bind_key_in_map ('\033', rl_complete, emacs_meta_keymap);
 	/* Set our hook functions */
-	rl_startup_hook = (Function *)on_startup_hook;
+	rl_startup_hook = on_startup_hook;
 #ifdef HAVE_RL_PRE_INPUT_HOOK
-	rl_pre_input_hook = (Function *)on_pre_input_hook;
+	rl_pre_input_hook = on_pre_input_hook;
 #endif
 	/* Set our completion function */
-	rl_attempted_completion_function = (CPPFunction *)flex_complete;
+	rl_attempted_completion_function = flex_complete;
 	/* Set Python word break characters */
 	rl_completer_word_break_characters =
 		strdup(" \t\n`~!@#$%^&*()-=+[{]}\\|;:'\",<>/?");

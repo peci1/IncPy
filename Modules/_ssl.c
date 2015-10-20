@@ -300,8 +300,8 @@ newPySSLObject(PySocketSockObject *Sock, char *key_file, char *cert_file,
 		self->ctx = SSL_CTX_new(TLSv1_method()); /* Set up context */
 	else if (proto_version == PY_SSL_VERSION_SSL3)
 		self->ctx = SSL_CTX_new(SSLv3_method()); /* Set up context */
-	else if (proto_version == PY_SSL_VERSION_SSL2)
-		self->ctx = SSL_CTX_new(SSLv2_method()); /* Set up context */
+	/*else if (proto_version == PY_SSL_VERSION_SSL2)
+		self->ctx = SSL_CTX_new(SSLv2_method());*/ /* Set up context */
 	else if (proto_version == PY_SSL_VERSION_SSL23)
 		self->ctx = SSL_CTX_new(SSLv23_method()); /* Set up context */
 	PySSL_END_ALLOW_THREADS
@@ -1627,8 +1627,8 @@ init_ssl(void)
 				PY_SSL_CERT_REQUIRED);
 
 	/* protocol versions */
-	PyModule_AddIntConstant(m, "PROTOCOL_SSLv2",
-				PY_SSL_VERSION_SSL2);
+	/*PyModule_AddIntConstant(m, "PROTOCOL_SSLv2",
+				PY_SSL_VERSION_SSL2);*/
 	PyModule_AddIntConstant(m, "PROTOCOL_SSLv3",
 				PY_SSL_VERSION_SSL3);
 	PyModule_AddIntConstant(m, "PROTOCOL_SSLv23",
